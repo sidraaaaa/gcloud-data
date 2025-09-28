@@ -1,0 +1,15 @@
+STORAGE_ACCOUNT=$(gsutil kms serviceaccount -p fa25-cit501-sidra-scratch)
+
+gcloud projects add-iam-policy-binding fa25-cit501-sidra-scratch \
+  --member="serviceAccount:${STORAGE_ACCOUNT}" \
+  --role="roles/pubsub.publisher"
+
+
+gcloud functions deploy parsebooks \
+--runtime=nodejs20 \
+--trigger-resource=cit501-scratch-books-assign-sidra \
+--trigger-event=google.storage.object.finalize \
+--region=us-central1
+
+# To read logs in cmdline:
+gcloud functions logs read parsebooks --region=us-central1
